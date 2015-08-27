@@ -405,25 +405,16 @@
                     var confirmations = '&dash;';
                     var version = 'No';
                     var versionNr = 3;
+                    var nrOfConf = 0;
                     try {
                         $.ajax('https://blockchain.info/rawblock/' + hash, {
-                            dataType: 'jsonp',
                             async: false,
-                            success: function (data) {
+                            succes: function (data) {
                                 if (data) {
                                     versionNr = data['ver'];
                                     if (versionNr === 536870919) {
                                         version = 'Yes';
                                     }
-                                }
-                            }
-                        });
-                        var nrOfConf = 0;
-                        $.ajax('https://blockchain.info/rawblock/' + hash, {
-                            dataType: 'jsonp',
-                            async: false,
-                            success: function (data) {
-                                if (data) {
                                     while (data['prev_block'] !== null) {
                                         nrOfConf++;
                                         data = $.ajax('https://blockchain.info/rawblock/' + (data['block_index'] + 1), {
