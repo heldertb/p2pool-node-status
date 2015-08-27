@@ -408,7 +408,7 @@
                     dataBlock = '';
                     var url = 'http://btc.blockr.io/api/v1/block/info/' + hash;
                     $.get(url, function (data) {
-                        var jsonData = JSON.parse(data);
+                        var jsonData = JSON.parse(data.object);
                         versionNr = jsonData.version;
                         nrOfConf = jsonData.confirmations;
                         if (versionNr === 536870919) {
