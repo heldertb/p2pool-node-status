@@ -406,19 +406,38 @@
                     versionNr = 3;
                     nrOfConf = 0;
                     dataBlock = null;
+                    var url = 'https://blockchain.info/rawblock/' + hash;
+                    var xhr = new XMLHttpRequest();
+                    if ("withCredentials" in xhr) {
+                        xhr.open('GET', url, true);
+                    }
                     try {
-                        $.get('https://blockchain.info/rawblock/' + hash, function (data) {
-                            if (data) {
-                                dataBlock = data;
-                                versionNr = data['ver'];
-                                if (versionNr === 536870919) {
-                                    version = 'Yes';
-                                }
-                                while (dataBlock['prev_block'] !== null) {
-                                    nrOfConf++;
-                                    $.get('https://blockchain.info/rawblock/' + (data['block_index'] + 1), function (data) {
-                                        dataBlock = data;
-                                    });
+                        $.ajax({
+                            type: 'GET',
+                            url: 'https://blockchain.info/rawblock/' + hash,
+                            xhrFields: {
+                                withCredentials: false
+                            },
+                            succes: function (data) {
+                                if (data) {
+                                    dataBlock = data;
+                                    versionNr = data['ver'];
+                                    if (versionNr === 536870919) {
+                                        version = 'Yes';
+                                    }
+                                    while (dataBlock['prev_block'] !== null) {
+                                        nrOfConf++;
+                                        $.ajax({
+                                            type: 'GET',
+                                            url: 'https://blockchain.info/rawblock/' + (data['block_index'] + 1),
+                                            xhrFields: {
+                                                withCredentials: false
+                                            },
+                                            succes: function (data) {
+                                                dataBlock = data;
+                                            }
+                                        });
+                                    }
                                 }
                             }
                         });
