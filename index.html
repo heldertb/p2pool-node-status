@@ -402,26 +402,23 @@
                     blockinfo = $('<a/>')
                             .attr('href', currency_info.block_explorer_url_prefix + hash)
                             .attr('target', '_blank').text(hash);
-                    var confirmations = '&dash;';
-                    var version = 'No';
-                    var versionNr = 3;
-                    var nrOfConf = 0;
+                    version = 'No';
+                    versionNr = 3;
+                    nrOfConf = 0;
+                    dataBlock;
                     try {
-                        $.ajax('https://blockchain.info/rawblock/' + hash, {
-                            async: false,
-                            succes: function (data) {
-                                if (data) {
-                                    versionNr = data['ver'];
-                                    if (versionNr === 536870919) {
-                                        version = 'Yes';
-                                    }
-                                    while (data['prev_block'] !== null) {
-                                        nrOfConf++;
-                                        data = $.ajax('https://blockchain.info/rawblock/' + (data['block_index'] + 1), {
-                                            dataType: 'jsonp',
-                                            async: false
-                                        });
-                                    }
+                        $.getJSON('https://blockchain.info/rawblock/' + hash, function (data) {
+                            if (data) {
+                                dataBlock = data;
+                                versionNr = data['ver'];
+                                if (versionNr === 536870919) {
+                                    version = 'Yes';
+                                }
+                                while (dataBlock['prev_block'] !== null) {
+                                    nrOfConf++;
+                                    $.getJSON('https://blockchain.info/rawblock/' + (data['block_index'] + 1), function (data) {
+                                        dataBlock = data;
+                                    });
                                 }
                             }
                         });
@@ -434,7 +431,7 @@
                             .append($.format.prettyDate(new Date(ts * 1000))));
                     tr.append($('<td/>').append(num));
                     tr.append($('<td/>').append(blockinfo));
-                    tr.append($('<td/>').html(confirmations));
+                    tr.append($('<td/>').append(nrOfConf));
                     tr.append($('<td/>').append(version));
                     ;
                     $('#' + num).remove();
