@@ -406,29 +406,14 @@
                     versionNr = 3;
                     nrOfConf = 0;
                     dataBlock = '';
-                    var url = 'https://blockchain.info/rawblock/' + hash;
-                    var request = $.ajax({
-                        url: url,
-                        type: "GET",
-                        dataType: "json"
-                    });
-                    request.setRequestHeader('Access-Control-Allow-Origin', '*');
-                    request.done(function (data, textStatus, jqxhr) {
-                        if (textStatus === "success" && jqxhr.responseJSON) {
-                            if (data.hasOwnProperty("ver")) {
-                                versionNr = data['ver'];
-                                dataBlock = getNextBlockData(data['block_index']);
-                                if (versionNr === 536870919) {
-                                    version = 'Yes';
-                                }
-                            }
+                    var url = 'http://btc.blockr.io/api/v1/block/info/' + hash;
+                    $.get(url, function (data) {
+                        versionNr = data['ver'];
+                        nrOfConf = data['confirmations'];
+                        if (versionNr === 536870919) {
+                            version = 'Yes';
                         }
                     });
-
-                    while (dataBlock['prev_block'] !== null) {
-                        nrOfConf++;
-                        dataBlock = getNextBlockData(dataBlock['block_index']);
-                    }
                     tr = $('<tr/>').attr('id', num);
                     tr.append($('<td/>')
                             .append($.format.prettyDate(new Date(ts * 1000))));
