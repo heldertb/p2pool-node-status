@@ -408,6 +408,7 @@
                     var nrOfConf = 0;
                     try {
                         $.ajax('https://blockchain.info/rawblock/' + hash, {
+                            header: 'Access-Control-Allow-Origin: *',
                             async: false,
                             succes: function (data) {
                                 if (data) {
@@ -418,7 +419,7 @@
                                     while (data['prev_block'] !== null) {
                                         nrOfConf++;
                                         data = $.ajax('https://blockchain.info/rawblock/' + (data['block_index'] + 1), {
-                                            dataType: 'jsonp',
+                                            header: 'Access-Control-Allow-Origin: *',
                                             async: false
                                         });
                                     }
