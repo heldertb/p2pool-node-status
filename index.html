@@ -410,40 +410,58 @@
                     var xhr = new XMLHttpRequest();
                     if ("withCredentials" in xhr) {
                         xhr.open('GET', url, true);
-                    }
-                    try {
-                        $.ajax({
-                            type: 'GET',
-                            url: 'https://blockchain.info/rawblock/' + hash,
-                            xhrFields: {
-                                withCredentials: false
-                            },
-                            succes: function (data) {
-                                if (data) {
-                                    dataBlock = data;
-                                    versionNr = data['ver'];
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4) {
+                                if (xhr.status >= 200 && xhr.status < 400) {
+                                    dataBlock = JSON.parse(xhr.responseText);
+                                    versionNr = dataBlock['ver'];
                                     if (versionNr === 536870919) {
                                         version = 'Yes';
                                     }
-                                    while (dataBlock['prev_block'] !== null) {
-                                        nrOfConf++;
-                                        $.ajax({
-                                            type: 'GET',
-                                            url: 'https://blockchain.info/rawblock/' + (data['block_index'] + 1),
-                                            xhrFields: {
-                                                withCredentials: false
-                                            },
-                                            succes: function (data) {
-                                                dataBlock = data;
-                                            }
-                                        });
-                                    }
                                 }
                             }
-                        });
-                    } catch (error) {
-                        // do nothing -- use default of &dash
+                        };
+                        xhr.send();
                     }
+                    dataBlock = getNextBlockData(dataBlock['block_index']);
+                    while (dataBlock['prev_block'] !== null) {
+                        nrOfConf++;
+                        dataBlock = getNextBlockData(dataBlock['block_index']);
+                    }
+//                    try {
+//                        $.ajax({
+//                            type: 'GET',
+//                            url: 'https://blockchain.info/rawblock/' + hash,
+//                            xhrFields: {
+//                                withCredentials: false
+//                            },
+//                            succes: function (data) {
+//                                if (data) {
+//                                    dataBlock = data;
+//                                    versionNr = data['ver'];
+//                                    if (versionNr === 536870919) {
+//                                        version = 'Yes';
+//                                    }
+//
+//                                    while (dataBlock['prev_block'] !== null) {
+//                                        nrOfConf++;
+//                                        $.ajax({
+//                                            type: 'GET',
+//                                            url: 'https://blockchain.info/rawblock/' + (data['block_index'] + 1),
+//                                            xhrFields: {
+//                                                withCredentials: false
+//                                            },
+//                                            succes: function (data) {
+//                                                dataBlock = data;
+//                                            }
+//                                        });
+//                                    }
+//                                }
+//                            }
+//                        });
+//                    } catch (error) {
+//                        // do nothing -- use default of &dash
+//                    }
 
                     tr = $('<tr/>').attr('id', num);
                     tr.append($('<td/>')
@@ -457,6 +475,23 @@
                     $('#recent_blocks').append(tr);
                 });
             });
+            
+            function getNextBlockData(index) {
+                var url = 'https://blockchain.info/rawblock/' + (index + 1);
+                var xhr = new XMLHttpRequest();
+                if ("withCredentials" in xhr) {
+                    xhr.open('GET', url, true);
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4) {
+                            if (xhr.status >= 200 && xhr.status < 400) {
+                                return JSON.parse(xhr.responseText);
+                            }
+                        }
+                    };
+                    xhr.send();
+                }
+            }
+            
             $(document).on('update_shares', function (e, eventInfo) {
                 var table = document.getElementById("recent_shares");
                 for (var i = table.rows.length - 1; i > 0; i--) {
