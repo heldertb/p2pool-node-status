@@ -514,7 +514,7 @@
                 // notification for share change
                 // since recent_shares are returned in an abitrary order, we had to wait for 
                 // sorting before checking for the most recent
-                        current_share = $('#recent_shares').children('tbody').children('tr').first().
+                current_share = $('#recent_shares').children('tbody').children('tr').first().
                         attr('id');
                 if (last_share === null) {
                     last_share = current_share;
@@ -594,6 +594,11 @@
                         if (data)
                             recent_blocks = data;
                         $(document).trigger('update_blocks');
+                    });
+                    $.getJSON('/web/my_share_hashes', function (data) {
+                        if (data)
+                            recent_shares = data;
+                        $(document).trigger('update_shares');
                     });
                 });
             }
