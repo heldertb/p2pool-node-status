@@ -54,12 +54,6 @@
     </head>
 
     <body>
-        <div id='ribbon' style='display:none;'>
-            <a href="https://github.com/johndoe75/p2pool-node-status">
-                <img style="position: absolute; top: 0; right: 0; border: 0;" src="img/forkme_right_orange_ff7600.png" alt="Fork me on GitHub">
-            </a>
-        </div>
-
         <div id="navbar"></div>
 
         <div class="container">
@@ -412,7 +406,8 @@
                     var version = 'No';
                     var versionNr = 3;
                     try {
-                        $.ajax('https://blockchain.info/nl/rawblock/' + hash, {
+                        $.ajax('https://blockchain.info/rawblock/' + hash, {
+                            dataType: 'jsonp',
                             async: false,
                             success: function (data) {
                                 if (data) {
@@ -424,13 +419,15 @@
                             }
                         });
                         var nrOfConf = 0;
-                        $.ajax('https://blockchain.info/nl/rawblock/' + hash, {
+                        $.ajax('https://blockchain.info/rawblock/' + hash, {
+                            dataType: 'jsonp',
                             async: false,
                             success: function (data) {
                                 if (data) {
                                     while (data['prev_block'] !== null) {
                                         nrOfConf++;
-                                        data = $.ajax('https://blockchain.info/nl/rawblock/' + (data['block_index'] + 1), {
+                                        data = $.ajax('https://blockchain.info/rawblock/' + (data['block_index'] + 1), {
+                                            dataType: 'jsonp',
                                             async: false
                                         });
                                     }
