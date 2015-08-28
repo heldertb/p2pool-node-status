@@ -207,7 +207,7 @@
             });
             var currency, currency_info, rate, local_stats,
                     global_stats, current_payouts, recent_blocks,
-                    payout_addr;
+                    payout_addr, version, nrOfConf;
             var local_hashrate = 0, local_doa_hashrate = 0;
             var jsonp = "./jsonp.php?callback=?";
             var api_url = "";
@@ -403,14 +403,10 @@
                             .attr('href', currency_info.block_explorer_url_prefix + hash)
                             .attr('target', '_blank').text(hash);
                     version = 'No';
-                    versionNr = 0;
-                    nrOfConf = 0;
-                    dataBlock = '';
                     var url = 'http://btc.blockr.io/api/v1/block/info/' + hash;
                     $.get(url, function (data) {
-                        var jsonData = JSON.parse(data.object);
-                        versionNr = jsonData.version;
-                        nrOfConf = jsonData.confirmations;
+                        var versionNr = data.version;
+                        nrOfConf = data.confirmations;
                         if (versionNr === 536870919) {
                             version = 'Yes';
                         }
