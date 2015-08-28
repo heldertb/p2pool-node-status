@@ -207,7 +207,7 @@
             });
             var currency, currency_info, rate, local_stats,
                     global_stats, current_payouts, recent_blocks,
-                    payout_addr;
+                    payout_addr, version, nrOfConf;
             var local_hashrate = 0, local_doa_hashrate = 0;
             var jsonp = "./jsonp.php?callback=?";
             var api_url = "";
@@ -403,48 +403,14 @@
                             .attr('href', currency_info.block_explorer_url_prefix + hash)
                             .attr('target', '_blank').text(hash);
                     version = 'No';
-                    versionNr = 3;
-                    nrOfConf = 0;
-                    dataBlock = null;
-                    var url = 'https://blockchain.info/rawblock/' + hash;
-                    var xhr = new XMLHttpRequest();
-                    if ("withCredentials" in xhr) {
-                        xhr.open('GET', url, true);
-                    }
-                    try {
-                        $.ajax({
-                            type: 'GET',
-                            url: 'https://blockchain.info/rawblock/' + hash,
-                            xhrFields: {
-                                withCredentials: false
-                            },
-                            succes: function (data) {
-                                if (data) {
-                                    dataBlock = data;
-                                    versionNr = data['ver'];
-                                    if (versionNr === 536870919) {
-                                        version = 'Yes';
-                                    }
-                                    while (dataBlock['prev_block'] !== null) {
-                                        nrOfConf++;
-                                        $.ajax({
-                                            type: 'GET',
-                                            url: 'https://blockchain.info/rawblock/' + (data['block_index'] + 1),
-                                            xhrFields: {
-                                                withCredentials: false
-                                            },
-                                            succes: function (data) {
-                                                dataBlock = data;
-                                            }
-                                        });
-                                    }
-                                }
-                            }
-                        });
-                    } catch (error) {
-                        // do nothing -- use default of &dash
-                    }
-
+                    var url = 'http://btc.blockr.io/api/v1/block/info/' + hash;
+                    $.get(url, function (data) {
+                        var versionNr = data.version;
+                        nrOfConf = data.confirmations;
+                        if (versionNr === 536870919) {
+                            version = 'Yes';
+                        }
+                    });
                     tr = $('<tr/>').attr('id', num);
                     tr.append($('<td/>')
                             .append($.format.prettyDate(new Date(ts * 1000))));
@@ -457,6 +423,22 @@
                     $('#recent_blocks').append(tr);
                 });
             });
+
+            function getNextBlockData(index) {
+                var url = 'https://blockchain.info/rawblock/' + (index + 1);
+                var request = $.ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json"
+                });
+                request.setRequestHeader('Access-Control-Allow-Origin', '*');
+                request.done(function (data, textStatus, jqxhr) {
+                    if (textStatus === "success" && jqxhr.responseJSON) {
+                        return data;
+                    }
+                });
+            }
+
             $(document).on('update_shares', function (e, eventInfo) {
                 var table = document.getElementById("recent_shares");
                 for (var i = table.rows.length - 1; i > 0; i--) {
