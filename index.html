@@ -417,10 +417,14 @@
                             .attr('href', currency_info.block_explorer_url_prefix + hash)
                             .attr('target', '_blank').text(hash);
                     version = 'No';
+                    nrOfConf = 0;
                     var url = 'http://btc.blockr.io/api/v1/block/info/' + hash;
                     $.get(url, function (data) {
-                        var versionNr = data.version;
-                        nrOfConf = data.confirmations;
+                        console.log(data);
+                        var arr = JSON.parse(data);
+                        console.log(arr);
+                        var versionNr = arr.version;
+                        nrOfConf = arr.confirmations;
                         if (versionNr === 536870919) {
                             version = 'Yes';
                         }
