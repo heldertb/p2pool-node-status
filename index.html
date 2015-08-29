@@ -423,12 +423,13 @@
                         num = block.nb;
                         ts = block.time_utc;
                         hash = block.hash;
+                        var date = convertUTCDateToLocalDate(new Date(ts));
                         blockinfo = $('<a/>')
-                            .attr('href', currency_info.block_explorer_url_prefix + hash)
-                            .attr('target', '_blank').text(hash);
+                                .attr('href', currency_info.block_explorer_url_prefix + hash)
+                                .attr('target', '_blank').text(hash);
                         tr = $('<tr/>').attr('id', num);
                         tr.append($('<td/>')
-                                .append($.format.prettyDate(new Date(ts * 1000))));
+                                .append(date.toLocaleString()));
                         tr.append($('<td/>').append(num));
                         tr.append($('<td/>').append(blockinfo));
                         tr.append($('<td/>').append(nrOfConf));
@@ -440,19 +441,15 @@
                 });
             });
 
-            function getNextBlockData(index) {
-                var url = 'https://blockchain.info/rawblock/' + (index + 1);
-                var request = $.ajax({
-                    url: url,
-                    type: "GET",
-                    dataType: "json"
-                });
-                request.setRequestHeader('Access-Control-Allow-Origin', '*');
-                request.done(function (data, textStatus, jqxhr) {
-                    if (textStatus === "success" && jqxhr.responseJSON) {
-                        return data;
-                    }
-                });
+            function convertUTCDateToLocalDate(date) {
+                var newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
+
+                var offset = date.getTimezoneOffset() / 60;
+                var hours = date.getHours();
+
+                newDate.setHours(hours - offset);
+
+                return newDate;
             }
 
             $(document).on('update_shares', function (e, eventInfo) {
