@@ -442,10 +442,10 @@
                             var A = parseFloat($(a).children('td').eq(1).text());
                             var B = parseFloat($(b).children('td').eq(1).text());
                             if (A > B) {
-                                return 1;
+                                return -1;
                             }
                             if (A < B) {
-                                return -1;
+                                return 1;
                             }
                             return 0;
                         });
