@@ -437,24 +437,23 @@
                         ;
 //                        $('#' + num).remove();
                         $('#recent_blocks').append(tr);
+                        var rows = $('#recent_blocks tbody tr').get();
+                        rows.sort(function (a, b) {
+                            var A = parseFloat($(a).children('td').eq(0).text());
+                            var B = parseFloat($(b).children('td').eq(0).text());
+                            if (A > B) {
+                                return -1;
+                            }
+                            if (A < B) {
+                                return 1;
+                            }
+                            return 0;
+                        });
+                        // replace the rows with the sorted ones
+                        $.each(rows, function (index, row) {
+                            $('#recent_blocks').children('tbody').append(row);
+                        });
                     });
-
-                });
-                var rows = $('#recent_blocks tbody tr').get();
-                rows.sort(function (a, b) {
-                    var A = parseFloat($(a).children('td').eq(0).text());
-                    var B = parseFloat($(b).children('td').eq(0).text());
-                    if (A > B) {
-                        return -1;
-                    }
-                    if (A < B) {
-                        return 1;
-                    }
-                    return 0;
-                });
-                // replace the rows with the sorted ones
-                $.each(rows, function (index, row) {
-                    $('#recent_blocks').children('tbody').append(row);
                 });
             });
 
