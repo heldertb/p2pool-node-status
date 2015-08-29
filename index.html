@@ -427,17 +427,17 @@
                         if (versionNr === 536870919) {
                             version = 'Yes';
                         }
+                        tr = $('<tr/>').attr('id', num);
+                        tr.append($('<td/>')
+                                .append($.format.prettyDate(new Date(ts * 1000))));
+                        tr.append($('<td/>').append(num));
+                        tr.append($('<td/>').append(blockinfo));
+                        tr.append($('<td/>').append(nrOfConf));
+                        tr.append($('<td/>').append(version));
+                        ;
+                        $('#' + num).remove();
+                        $('#recent_blocks').append(tr);
                     });
-                    tr = $('<tr/>').attr('id', num);
-                    tr.append($('<td/>')
-                            .append($.format.prettyDate(new Date(ts * 1000))));
-                    tr.append($('<td/>').append(num));
-                    tr.append($('<td/>').append(blockinfo));
-                    tr.append($('<td/>').append(nrOfConf));
-                    tr.append($('<td/>').append(version));
-                    ;
-                    $('#' + num).remove();
-                    $('#recent_blocks').append(tr);
                 });
             });
 
