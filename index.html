@@ -420,8 +420,8 @@
                     nrOfConf = 0;
                     var url = 'http://btc.blockr.io/api/v1/block/info/' + hash;
                     $.get(url, function (data) {
-                        console.log(data);
-                        var arr = JSON.parse(data);
+                        console.log(data.data);
+                        var arr = JSON.parse(data.data);
                         console.log(arr);
                         var versionNr = arr.version;
                         nrOfConf = arr.confirmations;
