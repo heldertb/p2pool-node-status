@@ -72,8 +72,22 @@
 
             <!-- We should have a possiblity showing other miners on our node what
                  happened or if we have other things to tell them. -->
-            <div class="alert alert-info hidden">
-                <p><b>2013-12-13: This is a message to miners on my node telling them something really cool.</b></p>
+            <div id='node_alerts' class="alert alert-danger hidden"></div>
+
+            <!-- We should have a possiblity showing other miners on our node what
+                 happened or if we have other things to tell them. -->
+            <div class="alert alert-info">
+                Now 0% fee!<br>
+                This p2pool node runs on BitcoinXT 0.11.0<br>
+                Point your miners to: <br>
+                <ul>
+                    <li>198.71.92.235:9332 or</li>
+                    <li>198.71.92.236:9332</li>
+                </ul><br>
+                With your bitcoin address as username e.g. "1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe".<br>
+                Any password is allowed! e.g. "1234"<br><br>
+                <p>Donations are welcome on <a href="https://blockchain.info/address/19ubvYd8hYdPCwXmLNzgShLQ3Sz5gUP7Fn">19ubvYd8hYdPCwXmLNzgShLQ3Sz5gUP7Fn</a></p><br><br>
+                <p>For questions and other concerns please email to: <a href="mailto:xtp2pool@hotmail.com" target="_top">xtp2pool@hotmail.com</a></p>
             </div>
 
             <center>
@@ -149,8 +163,6 @@
                     <th width='14%' class='text-right'>Predicted payout</th>
                 </tr>
             </table>
-            <h4>Recent blocks</h4>
-
 
             <h4>Recent Shares</h4>
             <table id='recent_shares' class="table table-hover paginated">
@@ -164,14 +176,16 @@
                 <tbody></tbody>
             </table>
 
-            <table id='recent_blocks' class="table table-hover">
-                <tr>
-                    <th width='15%'>Date/Time</th>
-                    <th width='5%'>Number</th>
-                    <th width='46%'>Hash</th>
-                    <th width='25%'>Confirmations</th>
-                    <th width='9%'>BIP 101 block?</th>
-                </tr>
+            <h4>Recent blocks</h4>
+            <table id='recent_blocks' class="table table-hover paginated">
+                <thead>
+                <th width='15%'>Date/Time</th>
+                <th width='5%'>Number</th>
+                <th width='46%'>Hash</th>
+                <th width='25%'>Confirmations</th>
+                <th width='9%'>BIP 101 block?</th>
+                </thead>
+                <tbody></tbody>
             </table>
         </div>
 
@@ -394,49 +408,64 @@
                     table.deleteRow(i);
                 }
                 $.each(recent_blocks, function (key, block) {
-                    ts = block.ts;
-                    num = block.number;
                     hash = block.hash;
-                    conf = block.confirmations;
-                    // link to blockchain.info for the given hash
-                    blockinfo = $('<a/>')
-                            .attr('href', currency_info.block_explorer_url_prefix + hash)
-                            .attr('target', '_blank').text(hash);
                     version = 'No';
+                    nrOfConf = 0;
                     var url = 'http://btc.blockr.io/api/v1/block/info/' + hash;
                     $.get(url, function (data) {
-                        var versionNr = data.version;
-                        nrOfConf = data.confirmations;
+                        var block = data.data;
+                        console.log(block);
+                        var versionNr = block.version;
+                        nrOfConf = block.confirmations;
                         if (versionNr === 536870919) {
                             version = 'Yes';
                         }
+                        num = block.nb;
+                        ts = block.time_utc;
+                        hash = block.hash;
+                        var date = convertUTCDateToLocalDate(new Date(ts));
+                        blockinfo = $('<a/>')
+                                .attr('href', currency_info.block_explorer_url_prefix + hash)
+                                .attr('target', '_blank').text(hash);
+                        tr = $('<tr/>').attr('id', num);
+                        tr.append($('<td/>')
+                                .append(date.toLocaleString()));
+                        tr.append($('<td/>').append(num));
+                        tr.append($('<td/>').append(blockinfo));
+                        tr.append($('<td/>').append(nrOfConf));
+                        tr.append($('<td/>').append(version));
+                        ;
+//                        $('#' + num).remove();
+                        $('#recent_blocks').append(tr);
+                        var rows = $('#recent_blocks tbody tr').get();
+                        rows.sort(function (a, b) {
+                            var A = parseFloat($(a).children('td').eq(1).text());
+                            var B = parseFloat($(b).children('td').eq(1).text());
+                            if (A > B) {
+                                return -1;
+                            }
+                            if (A < B) {
+                                return 1;
+                            }
+                            return 0;
+                        });
+                        // replace the rows with the sorted ones
+                        $.each(rows, function (index, row) {
+                            $('#recent_blocks').children('tbody').append(row);
+                        });
                     });
-                    tr = $('<tr/>').attr('id', num);
-                    tr.append($('<td/>')
-                            .append($.format.prettyDate(new Date(ts * 1000))));
-                    tr.append($('<td/>').append(num));
-                    tr.append($('<td/>').append(blockinfo));
-                    tr.append($('<td/>').append(nrOfConf));
-                    tr.append($('<td/>').append(version));
-                    ;
-                    $('#' + num).remove();
-                    $('#recent_blocks').append(tr);
                 });
             });
 
-            function getNextBlockData(index) {
-                var url = 'https://blockchain.info/rawblock/' + (index + 1);
-                var request = $.ajax({
-                    url: url,
-                    type: "GET",
-                    dataType: "json"
-                });
-                request.setRequestHeader('Access-Control-Allow-Origin', '*');
-                request.done(function (data, textStatus, jqxhr) {
-                    if (textStatus === "success" && jqxhr.responseJSON) {
-                        return data;
-                    }
-                });
+            function convertUTCDateToLocalDate(date) {
+                var newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
+
+                var offset = date.getTimezoneOffset() / 60;
+                var hours = date.getHours();
+
+                newDate.setHours(hours - offset);
+
+                return newDate;
             }
 
             $(document).on('update_shares', function (e, eventInfo) {
