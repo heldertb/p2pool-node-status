@@ -86,7 +86,7 @@
                 </ul><br>
                 With your bitcoin address as username e.g. "1MzFr1eKzLEC1tuoZ7URMB7WWBMgHKimKe".<br>
                 Any password is allowed! e.g. "1234"<br><br>
-                <p>Donations are welcome on <a href="https://blockchain.info/address/19ubvYd8hYdPCwXmLNzgShLQ3Sz5gUP7Fn">19ubvYd8hYdPCwXmLNzgShLQ3Sz5gUP7Fn</a></p><br><br>
+                <div id="coinwidget-bitcoin-19ubvYd8hYdPCwXmLNzgShLQ3Sz5gUP7Fn"></div>
                 <p>For questions and other concerns please email to: <a href="mailto:xtp2pool@hotmail.com" target="_top">xtp2pool@hotmail.com</a></p>
             </div>
 
@@ -687,7 +687,26 @@
             setInterval(function () {
                 $(document).trigger('update_graph');
             }, config.reload_chart_interval * 1000);
-
+            CoinWidgetCom.go({
+                wallet_address: '19ubvYd8hYdPCwXmLNzgShLQ3Sz5gUP7Fn',
+                currency: 'bitcoin',
+                counter: 'hide',
+                lbl_button: 'Donate',
+                lbl_count: 'donations',
+                lbl_amount: 'BTC',
+                lbl_address: 'Use address below to donate. Thanks!',
+                qrcode: true,
+                alignment: 'bl',
+                decimals: 8,
+                size: "small",
+                color: "dark",
+                countdownFrom: "1",
+                element: "#coinwidget-bitcoin-19ubvYd8hYdPCwXmLNzgShLQ3Sz5gUP7Fn",
+                onShow: function () {
+                },
+                onHide: function () {
+                }
+            });
         </script>
     </body>
 </html>
