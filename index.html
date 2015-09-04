@@ -203,6 +203,7 @@
                 </p>
             </div>
         </div>
+        <script src="//blockr.io/js_external/coinwidget/coin.js"></script>
         <script type="text/javascript">
 
             $(document).ready(function () {
@@ -687,6 +688,7 @@
             setInterval(function () {
                 $(document).trigger('update_graph');
             }, config.reload_chart_interval * 1000);
+            
             CoinWidgetCom.go({
                 wallet_address: '19ubvYd8hYdPCwXmLNzgShLQ3Sz5gUP7Fn',
                 currency: 'bitcoin',
